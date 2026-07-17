@@ -2,7 +2,7 @@
 - [Quick Start](#quick-start)
   - [Installation](#installation)
   - [Usage](#usage)
-  - [Github Actions Example](#github-actions-example)
+  - [GitHub Actions Example](#github-actions-example)
   - [S3 Lifecycle Policy](#s3-lifecycle-policy)
 - [Preventing Cache Bloat](#preventing-cache-bloat)
 - [Configuration](#configuration)
@@ -21,7 +21,7 @@
 
 Effectively, `gobuildcache` leverages S3OZ as a distributed build cache for concurrent `go build` or `go test` processes regardless of whether they're running on a single machine or distributed across a fleet of CI VMs. This dramatically improves CI performance for large Go repositories because each CI process will behave as if running with an almost completely pre-populated build cache, even if the CI process was started on a completely ephemeral VM that has never compiled code or executed tests for the repository before.
 
-`gobuildcache` is highly sensitive to the latency of the remote storage backend, so it works best when running on self-hosted runners in AWS targeting an S3 Express One Zone bucket in the same region (and ideally same availability zone) as the self-hosted runners. That said, it doesn't have to be used that way. For example, if you're using Github's hosted runners or self-hosted runners outside of AWS, you can use a different storage solution like Tigris or Google Cloud Storage (GCS). For GCP users, enabling GCS Anywhere Cache can provide performance similar to S3OZ for read-heavy workloads. See `examples/github_actions_tigris.yml` for an example of using `gobuildcache` with Tigris.
+`gobuildcache` is highly sensitive to the latency of the remote storage backend, so it works best when running on self-hosted runners in AWS targeting an S3 Express One Zone bucket in the same region (and ideally same availability zone) as the self-hosted runners. That said, it doesn't have to be used that way. For example, if you're using GitHub's hosted runners or self-hosted runners outside of AWS, you can use a different storage solution like Tigris or Google Cloud Storage (GCS). For GCP users, enabling GCS Anywhere Cache can provide performance similar to S3OZ for read-heavy workloads. See `examples/github_actions_tigris.yml` for an example of using `gobuildcache` with Tigris.
 
 # Quick Start
 
@@ -199,9 +199,9 @@ gcloud projects add-iam-policy-binding PROJECT_ID \
 
 Or for more granular control, create a custom role with only the required permissions.
 
-## Github Actions Example
+## GitHub Actions Example
 
-See the `examples` directory for examples of how to use `gobuildcache` in a Github Actions workflow. 
+See the `examples` directory for examples of how to use `gobuildcache` in a GitHub Actions workflow. 
 
 ## Lifecycle Policies
 
@@ -399,7 +399,7 @@ Contrast that with the `gobuildcache` approach where the first commit that is pu
 
 Third, the `gobuildcache` approach completely obviates the need to determine how frequently to "rebuild" the shared cache tarball. This is important because rebuilding the shared cache is expensive as it usually has to be built from a CI process running with no pre-built cache to avoid infinite cache bloat, but if it's run too infrequently then CI for PRs will be slow (because they "differ" too much from the stale cached tarball).
 
-Fourth, `gobuildcache` makes parallelizing CI using commonly supported "matrix" strategies much easier and efficient. For example, consider the common pattern where unit tests are split across 4 concurrent CI jobs using Github actions matrix functionality. In this approach, each CI job runs ~ 1/4th of the unit tests in the repository and each CI job determines which tests its responsible for running by hashing the unit tests name and then moduloing it by the index assigned to the CI job by Github actions matrix functionality.
+Fourth, `gobuildcache` makes parallelizing CI using commonly supported "matrix" strategies much easier and efficient. For example, consider the common pattern where unit tests are split across 4 concurrent CI jobs using GitHub actions matrix functionality. In this approach, each CI job runs ~ 1/4th of the unit tests in the repository and each CI job determines which tests its responsible for running by hashing the unit tests name and then moduloing it by the index assigned to the CI job by GitHub actions matrix functionality.
 
 This works great for parallelizing test execution across multiple VMs, but it presents a huge problem for build caching. The Go build cache doesn't just cache package compilation, it also caches test execution. This is a hugely important optimization for CI because it means that if you can populate the CI job's build cache efficiently, PRs that modify packages that not many other packages depend on will only have to run a small fraction of the total tests in the repository. 
 
