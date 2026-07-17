@@ -105,6 +105,18 @@ go build ./...
 go test ./...
 ```
 
+4. **Explicit OAuth2 access token** (when ADC is unavailable):
+```bash
+export GOCACHEPROG=gobuildcache
+export GOBUILDCACHE_BACKEND_TYPE=gcs
+export GOBUILDCACHE_GCS_BUCKET=$BUCKET_NAME
+export GOBUILDCACHE_GCS_ACCESS_TOKEN=$ACCESS_TOKEN
+go build ./...
+go test ./...
+```
+
+The explicit access token is used as-is and cannot be refreshed by `gobuildcache`. Ensure it remains valid for the duration of the build.
+
 #### GCS Anywhere Cache (Recommended for Performance)
 
 For improved performance, especially in read-heavy workloads, consider enabling [GCS Anywhere Cache](https://cloud.google.com/storage/docs/anywhere-cache). Anywhere Cache provides an SSD-backed zonal read cache that can significantly reduce latency for frequently accessed cache objects.
@@ -285,6 +297,7 @@ All environment variables support both `GOBUILDCACHE_<KEY>` and `<KEY>` forms (e
 | `-s3-prefix` | `GOBUILDCACHE_S3_PREFIX` | (empty) | S3 key prefix |
 | `-gcs-bucket` | `GOBUILDCACHE_GCS_BUCKET` | (none) | GCS bucket name (required for GCS) |
 | `-gcs-prefix` | `GOBUILDCACHE_GCS_PREFIX` | (empty) | GCS object prefix |
+| (env var only) | `GOBUILDCACHE_GCS_ACCESS_TOKEN` | (none) | Explicit GCS OAuth2 access token; bypasses Application Default Credentials |
 | `-debug` | `GOBUILDCACHE_DEBUG` | `false` | Enable debug logging |
 | `-stats` | `GOBUILDCACHE_PRINT_STATS` | `false` | Print cache statistics on exit |
 | `-read-only` | `GOBUILDCACHE_READ_ONLY` | `false` | Read-only mode: allow cache reads but skip writes |

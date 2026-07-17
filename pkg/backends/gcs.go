@@ -6,11 +6,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"strconv"
 	"time"
 
 	"cloud.google.com/go/storage"
+	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 // GCS implements Backend using Google Cloud Storage.
@@ -28,10 +31,18 @@ type GCS struct {
 func NewGCS(bucket, prefix string) (*GCS, error) {
 	ctx := context.Background()
 
-	// Create GCS client using Application Default Credentials.
-	// WithJSONReads forces the JSON API for downloads (default is XML).
-	// This is required for GCS Anywhere Cache compatibility.
-	client, err := storage.NewClient(ctx, storage.WithJSONReads())
+	// Build client options. WithJSONReads forces the JSON API for downloads
+	// (default is XML), required for GCS Anywhere Cache compatibility.
+	opts := []option.ClientOption{storage.WithJSONReads()}
+
+	// Support explicit access token via GOBUILDCACHE_GCS_ACCESS_TOKEN.
+	// Useful when the GCE metadata server is unreachable (e.g., docker run
+	// containers on bridge networks in Cloud Build).
+	if t := os.Getenv("GOBUILDCACHE_GCS_ACCESS_TOKEN"); t != "" {
+		opts = append(opts, option.WithTokenSource(oauth2.StaticTokenSource(&oauth2.Token{AccessToken: t})))
+	}
+
+	client, err := storage.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GCS client: %w", err)
 	}

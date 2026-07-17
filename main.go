@@ -112,6 +112,7 @@ func runServerCommand() {
 		fmt.Fprintf(os.Stderr, "  S3_PREFIX        S3 key prefix\n")
 		fmt.Fprintf(os.Stderr, "  GCS_BUCKET       GCS bucket name\n")
 		fmt.Fprintf(os.Stderr, "  GCS_PREFIX       GCS object prefix\n")
+		fmt.Fprintf(os.Stderr, "  GCS_ACCESS_TOKEN GCS OAuth2 access token (bypasses ADC)\n")
 		fmt.Fprintf(os.Stderr, "  COMPRESSION      Enable LZ4 compression (true/false)\n")
 		fmt.Fprintf(os.Stderr, "  ASYNC_BACKEND    Enable async backend writer (true/false)\n")
 		fmt.Fprintf(os.Stderr, "  READ_ONLY        Read-only mode: allow reads, skip writes (true/false)\n")
